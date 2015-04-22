@@ -8,25 +8,17 @@ if size(image, 3) == 3
 	image = image(:, :, 2);
 end
 
-image = imresize(image, 0.25, 'nearest');
-im_binary = imresize(true_mask, 0.25);
+image = imresize(image, 1, 'nearest');
+im_binary = imresize(true_mask, 1);
 
 block_image = cat(3, image, im_binary);
 
 positive_func = @(block) get_positive_distribution(block);
-positive_distributions = medcv_chunk_proc(block_image, 100, positive_func);
+positive_distributions = medcv_chunk_proc(block_image, 10, positive_func);
 
 negative_func = @(block) get_negative_distribution(block);
-negative_distributions = medcv_chunk_proc(block_image, 100, negative_func);
+negative_distributions = medcv_chunk_proc(block_image, 10, negative_func);
 
-end
-
-function [dist] = probability_distribution(set, range)
-	% Return the probability distribution for a set
-	if nargin < 2
-		range = 1:255;
-	end
-	dist = hist(set, range) ./ numel(set);
 end
 
 function [B] = get_positive_distribution(input_image)
@@ -48,7 +40,7 @@ function [B] = get_positive_distribution(input_image)
 		if length(allowed) < 10
 			tabulated = [];
 		else
-			tabulated = probability_distribution(allowed, 1:255);
+			tabulated = medcv_compute_distribution(allowed, 1:255);
 		end
 		B = [B, tabulated];
 	end
@@ -71,5 +63,5 @@ function [B] = get_negative_distribution(input_image)
 		return;
 	end
 	allowed = image(~im_binary);
-	B = probability_distribution(allowed, 1:255);
+	B = medcv_compute_distribution(allowed, 1:255);
 end
