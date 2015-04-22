@@ -1,15 +1,18 @@
 function [segmented] = mbs(image, true_mask)
 	% To try: Segment only a small section of a major image
 	image = image(:, :, 2);
-	% image = image(1965: 2191, 310:456);
-	% true_mask = true_mask(1965:2191, 310:456)
+
+	image = image(310:456, 1965: 2191);
+	true_mask = true_mask(310:456, 1965:2191);
 
 	[true_dists,  false_dists] = medcv_training_regions(image, true_mask);
 
-	block_image = imresize(image, 0.25, 'nearest');
+	imshow(image)
+
+	block_image = imresize(image, 1., 'nearest');
 
 	do_region_func = @(block_struct) do_region(block_struct.data, true_dists, false_dists);
-	processed = blockproc(block_image, [25, 25], do_region_func);
+	processed = blockproc(block_image, [10, 10], do_region_func);
 	segmented = processed;
 	% figure, imshow(processed)
 	% title('processed')
