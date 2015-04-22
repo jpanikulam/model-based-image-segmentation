@@ -1,4 +1,5 @@
 function [distance] = divergence(set_1, set_2, method)
+	% Determine the Bregman diveregence specified in the string "method" to difference the two distributions
 	if nargin < 3
 		method = 'cdf'
 	end
