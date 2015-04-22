@@ -6,6 +6,12 @@ function [distance] = divergence(set_1, set_2, method)
 
 	if strcmp(method, 'kl')
 		distance = kl_divergence(set_1, set_2);
+	elseif strcmp(method, 'js')
+		distance = jensen_shannon(set_1, set_2);
+	elseif strcmp(method, 'is')
+		distance = itakura_saito(set_1, set_2);
+	elseif strcmp(method, 'jsis')
+		distance = jensen_shannon_itakura_saito(set_1, set_2);
 	elseif strcmp(method, 'cdf')
 		distance = cdf_distance(set_1, set_2);
 	elseif strcmp(method, 'mahalanobis')
@@ -40,9 +46,27 @@ function [dist] = cdf_distance(set_1, set_2)
 	end
 end
 
-function [dist] = kl_divergence(set_1, set_2)
+function [dist] = kl_divergence(P, Q)
 	% Compute kullbeck-Leibler divergence
-	set_2(set_2 == 0) = 0.01;
-	dist = sum(set_1 .* log(set_1 ./ set_2));
+	Q((Q == 0) & (P ~= 0)) = 0.01;
+	dist = sum(P .* log(P ./ Q));
 
+end
+
+function [dist] = jensen_shannon(P, Q)
+	% Happier K-L Divergence
+	M = 0.5 * (P + Q);
+	dist = (0.5 * kl_divergence(P, M)) + (0.5 * kl_divergence(Q, M));
+end
+
+function [dist] = itakura_saito(P, Q)
+	% Itakura-Saito divergence
+	Q((Q == 0) & (P ~= 0)) = 0.01;	
+	dist = sum((P ./ Q) - log(P ./ Q) - 1));
+end
+
+function [dist] = jensen_shannon_itakura_saito(P, Q)
+	% Itakura Saito in the style of Jensen-Shannon
+	M = 0.5 * (P + Q);
+	dist = (0.5 * itakura_saito(P, M)) + (0.5 * itakura_saito(Q, M));
 end
