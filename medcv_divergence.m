@@ -5,15 +5,16 @@ function [distance] = divergence(set_1, set_2, method)
 	end
 
 	if strcmp(method, 'kl')
-		distance = kl_divergence(set_1, set_2)
+		distance = kl_divergence(set_1, set_2);
 	elseif strcmp(method, 'cdf')
-		distance = cdf_distance(set_1, set_2)
+		distance = cdf_distance(set_1, set_2);
 	elseif strcmp(method, 'mahalanobis')
 		% Does this actually work?
-		distance = mahalanobis(set_1, set_2)
+		distance = mahalanobis(set_1, set_2);
 	else
 		error(['No such method', method])
 	end
+end
 
 function [dist] = mahalanobis(set_1, set_2)
 	mahal_dist = mahal(set_1', set_2');
@@ -28,16 +29,20 @@ function [cdf] = compute_cdf(set)
 end
 
 function [dist] = cdf_distance(set_1, set_2)
-	cdf_1 = compute_cdf(set_1);
-	cdf_2 = compute_cdf(set_2);
+	cdf_1 = cumsum(set_1);
+	cdf_2 = cumsum(set_2);
 
 	dist = 0.0;
 	alpha = 1.8;
 	for k = 1:length(cdf_1)
-		dist = dist + ((cdf_1(k) - cdf_2(k)) ^ alpha)
+		single_dist = (abs(cdf_1(k) - cdf_2(k)) ^ alpha);
+		dist = dist + single_dist;
 	end
 end
 
 function [dist] = kl_divergence(set_1, set_2)
-	dist = 10
+	% Compute kullbeck-Leibler divergence
+	set_2(set_2 == 0) = 0.01;
+	dist = sum(set_1 .* log(set_1 ./ set_2));
+
 end
