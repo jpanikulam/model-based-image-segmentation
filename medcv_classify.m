@@ -1,4 +1,6 @@
-function [choice] = classify(test_dist, true_dists, false_dists, method)
+% function [choice] = classify(test_dist, true_dists, false_dists, method)
+function [t, f] = classify(test_dist, true_dists, false_dists, method)
+
 	% Test the divergence between test_dist, true_dists, and false_dists
 	% Return true is the distribution to which test_dist has the minimum divergence is in true_dists
 	% TRY: Implementing a percentile approach (Which group has MORE near-matches vs which has the single minimum)
@@ -25,8 +27,14 @@ function [choice] = classify(test_dist, true_dists, false_dists, method)
 		fdists(k) = dist;
 	end
 
-	if min(tdists) < min(fdists)
-		choice = true;
-	else
-		choice = false;
+
+	min(tdists)
+	min(fdists)
+	t = sum(tdists < 1.4 * min(tdists))
+	f = sum(fdists < 1.4 * min(fdists))
+
+	% if min(tdists) < min(fdists)
+	% 	choice = true;
+	% else
+	% 	choice = false;
 end
