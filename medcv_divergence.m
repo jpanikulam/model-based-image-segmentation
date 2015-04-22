@@ -48,8 +48,11 @@ end
 
 function [dist] = kl_divergence(P, Q)
 	% Compute kullbeck-Leibler divergence
-	Q((Q == 0) & (P ~= 0)) = 0.01;
-	dist = sum(P .* log(P ./ Q));
+	% Q((Q == 0) & (P ~= 0)) = 0.01;
+	log_ = log(P ./ Q);
+	log_(isinf(log_)) = 0.0;
+	log_(isnan(log_)) = 0.0;
+	dist = sum(P .* log_);
 
 end
 
@@ -61,8 +64,13 @@ end
 
 function [dist] = itakura_saito(P, Q)
 	% Itakura-Saito divergence
-	Q((Q == 0) & (P ~= 0)) = 0.01;	
-	dist = sum((P ./ Q) - log(P ./ Q) - 1));
+	log_ = log(P ./ Q);
+	log_(isinf(log_)) = 0.0;
+	log_(isnan(log_)) = 0.0;
+	div = (P ./ Q);
+	div(isinf(div)) = 0.0;
+	div(isnan(div)) = 0.0;
+	dist = sum(div - log_ - 1.0);
 end
 
 function [dist] = jensen_shannon_itakura_saito(P, Q)
