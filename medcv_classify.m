@@ -27,14 +27,14 @@ function [t, f] = classify(test_dist, true_dists, false_dists, method)
 		fdists(k) = dist;
 	end
 
+	% t = sum(tdists < 1.4 * min(tdists))
+	% f = sum(fdists < 1.4 * min(fdists))
 
-	min(tdists)
-	min(fdists)
-	t = sum(tdists < 1.4 * min(tdists))
-	f = sum(fdists < 1.4 * min(fdists))
-
-	% if min(tdists) < min(fdists)
-	% 	choice = true;
-	% else
-	% 	choice = false;
+	if min(tdists) < min(fdists)
+		t = true;
+		f = false;
+	else
+		t = false;
+		f = true;
+	end
 end
